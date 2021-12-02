@@ -22,16 +22,14 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class CopyToClipBoard implements ClipboardOwner {
-    public CopyToClipBoard() {
-    }
 
-    public void setText(String text) {
+    public synchronized void setText(String text) {
         StringSelection selection = new StringSelection(text);
         Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
         clipboard.setContents(selection, selection);
     }
 
-    public void copyFile(File file) {
+    public synchronized void copyFile(File file) {
     	ArrayList<File> fileList = new ArrayList<File>();
     	fileList.add(file);
     	TransferableFile trans = new TransferableFile(fileList);
@@ -39,74 +37,65 @@ public class CopyToClipBoard implements ClipboardOwner {
         c.setContents(trans, this);
     }
     
-    public void copyImage(Image i) {
+    public synchronized void copyImage(Image i) {
     	TransferableImage trans = new TransferableImage(i);
         Clipboard c = Toolkit.getDefaultToolkit().getSystemClipboard();
         c.setContents(trans, this);
     }
 
     public void lostOwnership(Clipboard clip, Transferable trans) {
+
+    }
+
+    private abstract static class TransferableEx<T> implements Transferable {
+        T i;
+
+        TransferableEx(T i) {
+            this.i = i;
+        }
+
+        @Override
+        public Object getTransferData(DataFlavor flavor) throws UnsupportedFlavorException, IOException {
+            if (isDataFlavorSupported(flavor))
+                return this.i;
+            else
+                throw new UnsupportedFlavorException(flavor);
+        }
+
+        @Override
+        public boolean isDataFlavorSupported(DataFlavor flavor) {
+            DataFlavor[] flavors = this.getTransferDataFlavors();
+            for(int i = 0; i < flavors.length; ++i) {
+                if (flavor.equals(flavors[i])) {
+                    return true;
+                }
+            }
+
+            return false;
+        }
     }
     
-    private class TransferableImage implements Transferable {
-    	private Image i;
-
-        public TransferableImage(Image i) {
-            this.i = i;
-        }
-
-        @Override
-        public Object getTransferData(DataFlavor flavor) throws UnsupportedFlavorException, IOException {
-        	return this.i;
+    private static class TransferableImage extends TransferableEx<Image> {
+        TransferableImage(Image i) {
+            super(i);
         }
 
         @Override
         public DataFlavor[] getTransferDataFlavors() {
-            DataFlavor[] flavors = new DataFlavor[]{DataFlavor.imageFlavor};
-            return flavors;
+            return new DataFlavor[]{DataFlavor.imageFlavor};
         }
-        
-        @Override
-        public boolean isDataFlavorSupported(DataFlavor flavor) {
-            DataFlavor[] flavors = this.getTransferDataFlavors();
-            for(int i = 0; i < flavors.length; ++i) {
-                if (flavor.equals(flavors[i])) {
-                    return true;
-                }
-            }
 
-            return false;
-        }
     }
 
-    private class TransferableFile implements Transferable {
-    	private List<File> i;
-
+    private static class TransferableFile extends TransferableEx<List<File>> {
         public TransferableFile(List<File> i) {
-            this.i = i;
-        }
-
-        @Override
-        public Object getTransferData(DataFlavor flavor) throws UnsupportedFlavorException, IOException {
-        	return this.i;
+            super(i);
         }
 
         @Override
         public DataFlavor[] getTransferDataFlavors() {
-            DataFlavor[] flavors = new DataFlavor[]{DataFlavor.javaFileListFlavor};
-            return flavors;
+            return new DataFlavor[]{DataFlavor.javaFileListFlavor};
         }
-        
-        @Override
-        public boolean isDataFlavorSupported(DataFlavor flavor) {
-            DataFlavor[] flavors = this.getTransferDataFlavors();
-            for(int i = 0; i < flavors.length; ++i) {
-                if (flavor.equals(flavors[i])) {
-                    return true;
-                }
-            }
 
-            return false;
-        }
     }
 }

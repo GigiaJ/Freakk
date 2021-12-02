@@ -6,11 +6,13 @@ import java.awt.AWTException;
 import java.awt.Color;
 import java.awt.Robot;
 
+import eventInfo.MessageInfo;
 import lc.kra.system.keyboard.*;
 import lc.kra.system.keyboard.event.*;
 import lc.kra.system.mouse.GlobalMouseHook;
 import lc.kra.system.mouse.event.GlobalMouseAdapter;
 import lc.kra.system.mouse.event.GlobalMouseEvent;
+import main.ClipboardHandler;
 import main.JNA;
 
 public class GlobalListeners {
@@ -115,6 +117,7 @@ public class GlobalListeners {
 			colorScheme = DARK;
 		}
 		// System.out.println("Mouse Press: " + String.valueOf(isWithinMessageBox));
+		/*
 		if (settings.getColorChatStatus() == true || settings.getAuthorEmbedStatus() == true
 				|| settings.getEmbedMessageStatus() == true) {
 			// DarkModeCheck and LightModeCheck
@@ -124,6 +127,7 @@ public class GlobalListeners {
 				PreventMessageEvent.unblockEnterKey();
 			}
 		}
+		 **/
 		if ((event.getButtons() & GlobalMouseEvent.BUTTON_LEFT) != GlobalMouseEvent.BUTTON_NO
 				&& (event.getButtons() & GlobalMouseEvent.BUTTON_RIGHT) != GlobalMouseEvent.BUTTON_NO)
 			// System.out.println("Both mouse buttons are currenlty pressed!");
@@ -155,14 +159,10 @@ public class GlobalListeners {
 				}
 
 				if (isWithinMessageBox == true) {
-					if (autoCompleteMenuOpen == false) {
-						System.out.println("Keyboard Press2: " + String.valueOf(isWithinMessageBox));
+					//if (autoCompleteMenuOpen == false) {
+						//System.out.println("Keyboard Press2: " + String.valueOf(isWithinMessageBox));
 						PreventMessageEvent.blockEnterKey();
-					}
-				}
-
-				if (PreventMessageEvent.messageDeleted == false) {
-					PreventMessageEvent.unblockEnterKey();
+					//}
 				}
 			}
 	}

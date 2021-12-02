@@ -25,8 +25,6 @@ public class CommandHandler extends MessageInfo {
 		chatColor = ChatColorSetter.color;
 		checkForCommands();
 		checkForMacros();
-		// Checks for any effects applied to the message and then resets the embed
-		// settings so they can be used properly for the next message
 		MessageEffects.triggerMessageEffects(message.getContent());
 		
 	}
@@ -52,7 +50,7 @@ public class CommandHandler extends MessageInfo {
 					message = commandSend;
 				}
 				if (commandSend == null) {
-					message.delete();
+					message = null;
 				}
 				main.SystemTrayManager.executeTray(false);
 				bot.settings.SettingSaver.saveSettings();
