@@ -1,7 +1,7 @@
 package main;
 
 public enum VersionEnum {
-    VERSION("2.6.1");
+    VERSION("1.0.1");
 
     private final String version;
 

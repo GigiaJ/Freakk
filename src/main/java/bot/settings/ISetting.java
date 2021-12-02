@@ -28,6 +28,6 @@ public interface ISetting {
 	final String EMPTY = "";
 	final int START = 0;
 	
-	final String REGEX = "\\\\(([^)]+)\\\\)";
+	final String REGEX = "\\(([^)]+)\\)";
 	
 }
