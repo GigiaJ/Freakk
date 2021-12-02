@@ -6,8 +6,6 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 
 public class StartUp extends Main {
-    public StartUp() {
-    }
 
     protected static void startUp() throws IOException {
         String finalPath = "";

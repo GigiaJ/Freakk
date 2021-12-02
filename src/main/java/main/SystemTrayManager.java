@@ -24,6 +24,8 @@ import java.awt.event.ItemListener;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.net.URL;
+import java.nio.file.Paths;
+import java.util.Objects;
 import javax.imageio.ImageIO;
 import macro.MacroManager;
 import screenCapturer.ScreenCapturer;
@@ -67,16 +69,14 @@ public class SystemTrayManager implements ItemListener, ActionListener {
             help.addActionListener(this);
             screenCapture.addActionListener(this);
             aboutItem.addActionListener(this);
-
             try {
-                URL imgLoc = this.getClass().getResource("../images/SkipperTrayLogo.png");
-                if (imgLoc != null) {
-                    img = ImageIO.read(imgLoc);
-                }
-                trayIcon = new TrayIcon(img);
+                img = ImageIO.read(Objects.requireNonNull(this.getClass().getResourceAsStream("/images/SkipperTrayLogo.png")));
             } catch (IOException e) {
                 e.printStackTrace();
             }
+            //img = loadImageResource(this.getClass(), "../images/SkipperTrayLogo.png");
+            trayIcon = new TrayIcon(img);
+
         }
 
     }
