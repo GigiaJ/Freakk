@@ -45,10 +45,8 @@ public class SettingSaver implements ISetting {
 			printer.print(settings.getAdminCommandSign() + CURLY_BRACKET_END);
 			printer.println();
 			printer.println();
-			printer.println();
-			printer.println();
-			printer.println();
-			printer.println();
+			printer.print(BWL + SPACE + CURLY_BRACKET_START);
+			printer.print(CURLY_BRACKET_END);
 			printer.println();
 			printer.println();
 			printer.print(MACROS + SPACE + CURLY_BRACKET_START);

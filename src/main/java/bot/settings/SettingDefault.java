@@ -24,8 +24,8 @@ public class SettingDefault {
 		builder.setNsfwFilters(new boolean[] {true, false, false});
 		builder.setCommandSign("/");
 		builder.setAdminCommandSign("/");
-		builder.setMacros(null);
 		builder.setBannedWordList(null);
+		builder.setMacros(null);
 		settings = builder.build();
 		main.StartUp.deleteDirectory(main.Main.baseFolder);
 		main.StartUp.checkForFiles();

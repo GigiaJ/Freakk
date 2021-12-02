@@ -31,8 +31,6 @@ public class SettingsLoader implements ISetting {
 				sb.append(line);
 
 				if (!sb.toString().startsWith(SETTINGS + SPACE + CURLY_BRACKET_START)
-						&& !sb.toString().startsWith(GUILDS + SPACE + CURLY_BRACKET_START)
-						&& !sb.toString().startsWith(USERS + SPACE + CURLY_BRACKET_START)
 						&& !sb.toString().startsWith(BWL + SPACE + CURLY_BRACKET_START)
 						&& !sb.toString().startsWith(MACROS + SPACE + CURLY_BRACKET_START) && !line.isEmpty()) {
 					break;
@@ -41,9 +39,9 @@ public class SettingsLoader implements ISetting {
 				LoadBannedWordList.checkForBWL(sb);
 				LoadMacros.checkForMacros(sb);
 			}
-			fis.close();
-			isr.close();
 			br.close();
+			isr.close();
+			fis.close();
 		}
 		applySettings();
 	}
@@ -51,8 +49,9 @@ public class SettingsLoader implements ISetting {
 	@SuppressWarnings("unchecked")
 	public static void applySettings() {
 		SettingBuilder builder = new SettingBuilder();
-		if (!settingsToLoad.isEmpty() && !settingsToLoad.get(SettingEnum.VERSION.getValue()).equals(VersionEnum.VERSION)) {
+		if (settingsToLoad.isEmpty() || !settingsToLoad.get(SettingEnum.VERSION.getValue()).equals(VersionEnum.VERSION)) {
 			try {
+				System.out.println(settingsToLoad.get(SettingEnum.VERSION.getValue()));
 				SettingDefault.setSettingDefault();
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
@@ -79,11 +78,11 @@ public class SettingsLoader implements ISetting {
 			builder.setNsfwFilters((boolean[]) settingsToLoad.get(SettingEnum.NSFWFILTER.getValue()));
 			builder.setCommandSign((String) settingsToLoad.get(SettingEnum.COMMANDSIGN.getValue()));
 			builder.setAdminCommandSign((String) settingsToLoad.get(SettingEnum.ADMINCOMMANDSIGN.getValue()));
-			if (settingsToLoad.size() > SettingEnum.BANNED_WORD_LIST.getValue()) {
+			if (settingsToLoad.size() >= SettingEnum.BANNED_WORD_LIST.getValue()) {
 				builder.setBannedWordList(
 						(ArrayList<String>) settingsToLoad.get(SettingEnum.BANNED_WORD_LIST.getValue()));
 			}
-			if (settingsToLoad.size() > SettingEnum.MACROS.getValue()) {
+			if (settingsToLoad.size() >= SettingEnum.MACROS.getValue()) {
 				builder.setMacros((ArrayList<Macro>) settingsToLoad.get(SettingEnum.MACROS.getValue()));
 			}
 			settings = builder.build();
