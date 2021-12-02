@@ -51,7 +51,6 @@ public class SettingsLoader implements ISetting {
 		SettingBuilder builder = new SettingBuilder();
 		if (settingsToLoad.isEmpty() || !settingsToLoad.get(SettingEnum.VERSION.getValue()).equals(VersionEnum.VERSION)) {
 			try {
-				System.out.println(settingsToLoad.get(SettingEnum.VERSION.getValue()));
 				SettingDefault.setSettingDefault();
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
