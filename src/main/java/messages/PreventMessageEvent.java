@@ -14,99 +14,108 @@ import com.sun.jna.platform.win32.WinUser.MSG;
 
 import eventInfo.MessageInfo;
 
-import java.awt.AWTException;
-import java.awt.Robot;
-import java.awt.event.KeyEvent;
-
+import handler.CommandHandler;
+import main.ClipboardHandler;
 import main.JNA;
-import main.TextTransfer;
+
+import java.util.concurrent.*;
 
 public class PreventMessageEvent {
     private static HHOOK hhk;
     private static LowLevelKeyboardProc keyboardHook;
+    private static HMODULE hMod;
     private static User32 lib;
-    public static boolean messageDeleted = true;
-    private static boolean second = false;
-    
-    public PreventMessageEvent() {
+    private static ExecutorService es;
+    private static boolean isNotDuplicate = false;
+    private static Future<?> blockTask;
+
+
+    public static void setBlockTask(Future<?> future) {
+        blockTask = future;
+    }
+    public static Future<?> getBlockTask() {
+        return blockTask;
+    }
+
+    public static ExecutorService getExecutorService() {
+        return es;
+    }
+
+    private static LRESULT hookCallback(int nCode, WPARAM wParam, KBDLLHOOKSTRUCT info) {
+        if (nCode >= 0) {
+            if (isDiscord() && isEnterPressed(info.vkCode)) {
+                if (GlobalListeners.isWithinMessageBox && !GlobalListeners.autoCompleteMenuOpen ) {
+                    ClipboardHandler.getInstance().copyToClipboard();
+                    if (isNotDuplicate) {
+                        String lastTypedMessage = ClipboardHandler.getInstance().getClipboardContents();
+                        if (isClipboardEmptyAndIsUsable(lastTypedMessage)) {
+                            setBlockTask(getExecutorService().submit(() -> {
+                                MessageInfo.MessageCreated(lastTypedMessage);
+                                while (MessageInfo.getMessage() == null);
+                                    try {
+                                        CommandHandler.handler();
+                                        MessageInfo.message = null;
+                                    } catch (InterruptedException | ExecutionException e) {
+                                        e.printStackTrace();
+                                    }
+                            }));
+                            isNotDuplicate = false;
+                            return new LRESULT(-1L);
+                        }
+                    }
+                    isNotDuplicate = true;
+                }
+                return new LRESULT(1L);
+            }
+        }
+        return PreventMessageEvent.lib.CallNextHookEx(PreventMessageEvent.hhk, nCode, wParam, new LPARAM(info.getPointer().getLong(0L)));
+    }
+
+
+    private static boolean isEnterPressed(int code) {
+        return code == 13;
+    }
+
+    private static boolean isClipboardEmptyAndIsUsable(String clipboardContents) {
+        return clipboardContents != null && !clipboardContents.isEmpty();
     }
 
     public static void createBlockHook() {
-         PreventMessageEvent.lib = User32.INSTANCE;
-         HMODULE hMod = Kernel32.INSTANCE.GetModuleHandle((String)null);
-         PreventMessageEvent.keyboardHook = new LowLevelKeyboardProc() {
-             public LRESULT callback(int nCode, WPARAM wParam, KBDLLHOOKSTRUCT info) {
-                 if (nCode >= 0) {
-                     if (PreventMessageEvent.isDiscord()) {
-						    TextTransfer textTransfer = new TextTransfer();
-						    switch(info.vkCode) {
-						    case 13:
-						        if (GlobalListeners.isWithinMessageBox && !GlobalListeners.autoCompleteMenuOpen) {
-						            try {
-						                Robot robot = new Robot();
-						    	        robot.keyPress(KeyEvent.VK_CONTROL);
-						    	        robot.keyPress(KeyEvent.VK_A);
-						    	        robot.keyRelease(KeyEvent.VK_CONTROL);
-						    	        robot.keyRelease(KeyEvent.VK_A);
-						    	        robot.keyPress(KeyEvent.VK_CONTROL);
-						    	        robot.keyPress(KeyEvent.VK_X);
-						    	        robot.keyRelease(KeyEvent.VK_CONTROL);
-						    	        robot.keyRelease(KeyEvent.VK_X);
-						            } catch (AWTException var7) {
-						                var7.printStackTrace();
-						            }
-
-						            if (PreventMessageEvent.second) {
-						                String lastTypedMessage = textTransfer.getClipboardContents();
-						                if (lastTypedMessage != null && !lastTypedMessage.isEmpty() && lastTypedMessage != "") {
-						                	MessageInfo.MessageCreated(lastTypedMessage);
-						                    PreventMessageEvent.second = false;
-						                    PreventMessageEvent.messageDeleted = false;
-						                    textTransfer.setClipboardContents("");
-						                    return new LRESULT(1L);
-						                }
-						            }
-
-						            PreventMessageEvent.messageDeleted = false;
-						            PreventMessageEvent.second = true;
-						        }
-
-						        return null;
-						    }
-						}
-                 }
-
-                 return PreventMessageEvent.lib.CallNextHookEx(PreventMessageEvent.hhk, nCode, wParam, new LPARAM(info.getPointer().getLong(0L)));
-             }
-         };
-         PreventMessageEvent.hhk = PreventMessageEvent.lib.SetWindowsHookEx(13, PreventMessageEvent.keyboardHook, hMod, 0);
-         MSG msg = new MSG();
-
-         int result;
-         while((result = PreventMessageEvent.lib.GetMessage(msg, (HWND)null, 0, 0)) != 0 && result != -1) {
-             PreventMessageEvent.lib.TranslateMessage(msg);
-             PreventMessageEvent.lib.DispatchMessage(msg);
-         }
-
-         PreventMessageEvent.lib.UnhookWindowsHookEx(PreventMessageEvent.hhk);
+        if (hhk == null) {
+            PreventMessageEvent.hhk = PreventMessageEvent.lib.SetWindowsHookEx(13, PreventMessageEvent.keyboardHook, hMod, 0);
+            MSG msg = new MSG();
+            long result;
+            while ((result = PreventMessageEvent.lib.GetMessage(msg, (HWND) null, 0, 0)) != 0 && result != -1) {
+                PreventMessageEvent.lib.TranslateMessage(msg);
+                PreventMessageEvent.lib.DispatchMessage(msg);
+            }
+            PreventMessageEvent.lib.UnhookWindowsHookEx(PreventMessageEvent.hhk);
+        }
     }
-    
+
+    public static void createLib() {
+        if (lib == null) {
+            PreventMessageEvent.lib = User32.INSTANCE;
+            hMod = Kernel32.INSTANCE.GetModuleHandle((String) null);
+            keyboardHook = PreventMessageEvent::hookCallback;
+            es = Executors.newSingleThreadExecutor();
+        }
+
+    }
+
     public static void blockEnterKey() {
         if (isWindows()) {
-        	if (hhk == null) {
-        		createBlockHook();
-        	}
+            createLib();
+            createBlockHook();
         }
     }
 
-    @SuppressWarnings("deprecation")
 	public static void unblockEnterKey() {
-        if (isWindows() && lib != null) {
+        if (lib != null) {
             lib.UnhookWindowsHookEx(hhk);
             hhk = null;
-            messageDeleted = true;
+            lib = null;
         }
-
     }
 
     public static boolean isWindows() {

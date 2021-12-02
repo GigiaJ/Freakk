@@ -32,7 +32,7 @@ public class ColorChatEffect extends MessageEffects {
                 e.printStackTrace();
             }
 
-            if (MessageEffects.imageUrl == null) {
+            if (message != null) {
                 message.sendFile(Main.imageFile);
             }
         }

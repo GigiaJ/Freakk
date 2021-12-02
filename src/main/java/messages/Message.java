@@ -7,22 +7,13 @@
 
 package messages;
 
-import java.awt.AWTException;
-import java.awt.Image;
-import java.awt.Robot;
-import java.awt.event.KeyEvent;
-import java.awt.image.BufferedImage;
 import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
-
-import javax.imageio.ImageIO;
-
-import screenCapturer.CopyToClipBoard;
+import main.ClipboardHandler;
 
 public class Message {
 	private String content;
-	
+
 	public Message(String content) {
 		this.content = content;
 	}
@@ -40,23 +31,15 @@ public class Message {
 	}
 	
 	public void send() {
-		Robot robot;
-		try {
-			robot = new Robot();
-	        robot.keyPress(KeyEvent.VK_CONTROL);
-	        robot.keyPress(KeyEvent.VK_V);
-	        robot.keyRelease(KeyEvent.VK_CONTROL);
-	        robot.keyRelease(KeyEvent.VK_V);
-	        robot.keyPress(KeyEvent.VK_ENTER);
-		} catch (AWTException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		PreventMessageEvent.unblockEnterKey();
+		ClipboardHandler.getInstance().setClipboardContents(content);
+		ClipboardHandler.getInstance().pasteFromClipboard();
+		PreventMessageEvent.getBlockTask().cancel(true);
+		PreventMessageEvent.blockEnterKey();
 	}
-	
+
 	public void delete() {
-		this.content = "";
-		//DONT SEND IT
+		//DO NOTHING DONT SEND
 	}
 
 	/**
@@ -68,20 +51,11 @@ public class Message {
 	}
 	
 	public void sendFile(File file) {
-		CopyToClipBoard clipboardCopier = new CopyToClipBoard();
-		clipboardCopier.copyFile(file);
-		Robot robot;
-		try {
-			robot = new Robot();
-	        robot.keyPress(KeyEvent.VK_CONTROL);
-	        robot.keyPress(KeyEvent.VK_V);
-	        robot.keyRelease(KeyEvent.VK_CONTROL);
-	        robot.keyRelease(KeyEvent.VK_V);
-	        robot.keyPress(KeyEvent.VK_ENTER);
-		} catch (AWTException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		PreventMessageEvent.unblockEnterKey();
+		ClipboardHandler.getInstance().copyFile(file);
+		ClipboardHandler.getInstance().pasteFromClipboard();
+		PreventMessageEvent.getBlockTask().cancel(true);
+		PreventMessageEvent.blockEnterKey();
 	}
 
 }
