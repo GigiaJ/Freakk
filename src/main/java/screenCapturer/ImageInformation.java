@@ -7,7 +7,7 @@
 
 package screenCapturer;
 
-class ImageInformation {
+public class ImageInformation {
     private int height;
     private int width;
     private int topRightX;

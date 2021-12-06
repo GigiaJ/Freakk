@@ -27,7 +27,7 @@ public class JNA {
 
 		int GetWindowThreadProcessId(HWND hwnd, IntByReference pId);
 
-		HWND FindWindow(String lpClassName, String lpWindowName);
+		HWND FindWindowA(String lpClassName, String lpWindowName);
 
 		boolean AttachThreadInput(int idAttach, int idAttachTo, boolean fAttach); //Originally the ints are DWORD's but because DWORD is just the byte size and it matches integer sizes this works fine
 																				//Could be dangerous and have unintended side effects if used improperly though

@@ -3,7 +3,6 @@ package main;
 import bot.settings.SettingSaver;
 import commands.color.AutoColor;
 import commands.color.colorchat.ColorChat;
-import commands.general.Translator;
 import commands.general.CloseBot;
 import commands.general.MessageEmbeding;
 import commands.general.NoSpace;
@@ -23,12 +22,11 @@ import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
-import java.net.URL;
-import java.nio.file.Paths;
 import java.util.Objects;
 import javax.imageio.ImageIO;
 import macro.MacroManager;
 import screenCapturer.ScreenCapturer;
+import translator.Translator;
 
 public class SystemTrayManager implements ItemListener, ActionListener {
     static Menu displayMenu = new Menu("Settings");
@@ -46,6 +44,7 @@ public class SystemTrayManager implements ItemListener, ActionListener {
     static MenuItem macro = new MenuItem("Macro");
     static MenuItem help = new MenuItem("Help");
     static MenuItem screenCapture = new MenuItem("Screen Capturer");
+    static MenuItem translatorSelect = new MenuItem("Translator Area Select");
     static ItemListener listener = null;
     static BufferedImage img = null;
     static TrayIcon trayIcon = null;
@@ -68,6 +67,7 @@ public class SystemTrayManager implements ItemListener, ActionListener {
             macro.addActionListener(this);
             help.addActionListener(this);
             screenCapture.addActionListener(this);
+            translatorSelect.addActionListener(this);
             aboutItem.addActionListener(this);
             try {
                 img = ImageIO.read(Objects.requireNonNull(this.getClass().getResourceAsStream("/images/SkipperTrayLogo.png")));
@@ -110,6 +110,7 @@ public class SystemTrayManager implements ItemListener, ActionListener {
                 displayMenu.add(embColor);
                 popup.add(macro);
                 popup.add(screenCapture);
+                popup.add(translatorSelect);
                 popup.add(help);
                 popup.add(logout);
                 popup.add(exit);
@@ -196,19 +197,23 @@ public class SystemTrayManager implements ItemListener, ActionListener {
         }
 
         if (source == help) {
-            HelpGUI.main((String[])null);
+            HelpGUI.main(null);
         }
 
         if (source == macro) {
-            MacroManager.main((String[])null);
+            MacroManager.main(null);
         }
 
         if (source == aboutItem) {
-            CreditsInterface.main((String[])null);
+            CreditsInterface.main(null);
         }
 
         if (source == screenCapture) {
-            ScreenCapturer.main((String[])null);
+            ScreenCapturer.main(null);
+        }
+
+        if (source == translatorSelect) {
+            Translator.main(null);
         }
 
     }
@@ -270,7 +275,7 @@ public class SystemTrayManager implements ItemListener, ActionListener {
         }
 
         if (settingToChange == 3) {
-            Translator.translateMessages();
+            commands.general.Translator.translateMessages();
         }
 
         if (settingToChange == 4) {

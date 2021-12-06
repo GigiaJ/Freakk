@@ -19,8 +19,6 @@ repositories {
 ext {
     //These are consistently updated so for future sake we'll have the version number easily modifiable here.
     jnaVersion = '5.9.0'
-    javaCPPVersion = '1.5.5'
-    tesseractVersion = '4.1.1-1.5.5'
     kraVersion = '3.8'
 }
 
@@ -43,10 +41,10 @@ dependencies {
     implementation group: 'org.slf4j', name:'slf4j-api', version: '1.7.2'
     implementation group: 'org.slf4j', name:'slf4j-simple', version: '1.7.2'
 
+    // https://mvnrepository.com/artifact/net.sourceforge.tess4j/tess4j
+    implementation group: 'net.sourceforge.tess4j', name: 'tess4j', version: '5.0.0'
     implementation "net.java.dev.jna:jna:${jnaVersion}"
     implementation "net.java.dev.jna:jna-platform:${jnaVersion}"
-    implementation "org.bytedeco:javacpp:${javaCPPVersion}"
-    implementation "org.bytedeco:tesseract-platform:${tesseractVersion}"
     implementation "lc.kra.system:system-hook:${kraVersion}"
     implementation 'org.jsoup:jsoup:1.14.3'
 }
