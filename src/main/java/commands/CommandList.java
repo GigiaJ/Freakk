@@ -11,7 +11,7 @@ public class CommandList {
 			// Help
 			cmdNext = null, cmdBack = null, cmdHelp = null,
 			// EmbedMessages
-			cmdMsgEmb = null, cmdAuthorMsgEmb = null,
+			cmdMsgEmb = null, cmdTranslator = null,
 			// Chatfilter
 			cmdChatFilterGuild = null, cmdChatFilterCheck = null, cmdChatFilterChannel = null,
 			// Namefilter

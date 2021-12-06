@@ -18,25 +18,25 @@ repositories {
 
 ext {
     //These are consistently updated so for future sake we'll have the version number easily modifiable here.
-    jnaVersion = '4.5.2'
-    javaCPPVersion = '1.5.2'
-    tesseractVersion = '4.1.0-1.5.2'
-    kraVersion = '3.2'
+    jnaVersion = '5.9.0'
+    javaCPPVersion = '1.5.5'
+    tesseractVersion = '4.1.1-1.5.5'
+    kraVersion = '3.8'
 }
 
 dependencies {
-    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.7.0'
-    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.7.0'
+    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.8.2'
+    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.8.2'
     // This dependency is exported to consumers, that is to say found on their compile classpath.
     api 'org.apache.commons:commons-math3:3.6.1'
     // This dependency is used internally, and not exposed to consumers on their own compile classpath.
-    implementation 'com.google.guava:guava:21.0'
-    implementation 'org.apache.commons:commons-collections4:4.1'
-    implementation 'org.apache.commons:commons-lang3:3.5'
-    implementation 'com.neovisionaries:nv-websocket-client:2.2'
+    implementation 'com.google.guava:guava:31.0.1-jre'
+    implementation 'org.apache.commons:commons-collections4:4.4'
+    implementation 'org.apache.commons:commons-lang3:3.12.0'
+    implementation 'com.neovisionaries:nv-websocket-client:2.14'
     implementation group: 'org.apache.httpcomponents', name: 'httpclient', version: '4.5'
-    implementation 'com.squareup.okhttp3:okhttp:3.8.1'
-    testImplementation 'junit:junit:4.12'
+    implementation 'com.squareup.okhttp3:okhttp:4.9.3'
+    testImplementation 'junit:junit:4.13.2'
     implementation group: 'org.apache.logging.log4j', name: 'log4j-api', version: '2.11.1'
     implementation group: 'org.apache.logging.log4j', name: 'log4j-core', version: '2.11.1'
     implementation group: 'org.apache.logging.log4j', name: 'log4j-to-slf4j', version: '2.11.1'
@@ -48,7 +48,7 @@ dependencies {
     implementation "org.bytedeco:javacpp:${javaCPPVersion}"
     implementation "org.bytedeco:tesseract-platform:${tesseractVersion}"
     implementation "lc.kra.system:system-hook:${kraVersion}"
-    implementation 'org.jsoup:jsoup:1.11.3'
+    implementation 'org.jsoup:jsoup:1.14.3'
 }
 
 test {

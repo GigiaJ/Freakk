@@ -30,7 +30,7 @@ public class SettingsViewer {
 		String version = VersionEnum.VERSION.getVersion();
 		boolean autoColor = settings.getAutoColorStatus();
 		boolean embMsg = settings.getEmbedMessageStatus();
-		boolean authorEmb = settings.getAuthorEmbedStatus();
+		boolean authorEmb = settings.getTranslatorStatus();
 		int fontSize = settings.getCurrentFontSize();
 		String font = settings.getCurrentFontStyle();
 		boolean colorChat = settings.getColorChatStatus();

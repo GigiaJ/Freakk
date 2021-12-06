@@ -65,7 +65,7 @@ public class SettingsLoader implements ISetting {
 					Boolean.valueOf((String) settingsToLoad.get(SettingEnum.COLORCHATSTATUS.getValue())));
 			builder.setEmbedMessageStatus(
 					Boolean.valueOf((String) settingsToLoad.get(SettingEnum.EMBEDMESSAGE.getValue())));
-			builder.setAuthorEmbedStatus(
+			builder.setTranslatorStatus(
 					Boolean.valueOf((String) settingsToLoad.get(SettingEnum.AUTHOREMBED.getValue())));
 			builder.setReverserStatus(Boolean.valueOf((String) settingsToLoad.get(SettingEnum.REVERSER.getValue())));
 			builder.setNoSpaceStatus(Boolean.valueOf((String) settingsToLoad.get(SettingEnum.NOSPACE.getValue())));

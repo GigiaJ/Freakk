@@ -21,8 +21,8 @@ public class CommandUpdater extends CommandList {
 		cmdMsgEmb = commands.general.MessageEmbeding.updateCommand(cmdSign, adminCmdSign);
 		listOfCommands.add(cmdMsgEmb);
 
-		cmdAuthorMsgEmb = commands.general.AuthorEmbeding.updateCommand(cmdSign, adminCmdSign);
-		listOfCommands.add(cmdAuthorMsgEmb);
+		cmdTranslator = commands.general.Translator.updateCommand(cmdSign, adminCmdSign);
+		listOfCommands.add(cmdTranslator);
 
 		cmdLink = commands.general.SelfBotLink.updateCommand(cmdSign, adminCmdSign);
 		listOfCommands.add(cmdLink);

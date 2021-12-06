@@ -10,7 +10,7 @@ import messages.Message;
 
 public class MessageEmbeding {
 	public static Message embedMessage() {
-		settings = settings.debuild().setAuthorEmbedStatus(false).build();
+		settings = settings.debuild().setTranslatorStatus(false).build();
 		settings = settings.debuild().setEmbedMessageStatus(!settings.getEmbedMessageStatus()).build();
 		return null;
 	}

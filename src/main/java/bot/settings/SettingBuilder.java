@@ -11,7 +11,7 @@ public class SettingBuilder {
 	protected boolean colorChatStatus;
 	protected boolean autoColorStatus;
 	protected boolean embedMessageStatus;
-	protected boolean authorEmbedStatus;
+	protected boolean translatorStatus;
 	protected boolean reverserStatus;
 	protected boolean noSpaceStatus;
 	protected boolean spongeBobChickenCapsStatus;
@@ -33,7 +33,7 @@ public class SettingBuilder {
 		colorChatStatus = debuilder.colorChatStatus;
 		autoColorStatus = debuilder.autoColorStatus;
 		embedMessageStatus = debuilder.embedMessageStatus;
-		authorEmbedStatus = debuilder.authorEmbedStatus;
+		translatorStatus = debuilder.translatorStatus;
 		reverserStatus = debuilder.reverserStatus;
 		noSpaceStatus = debuilder.noSpaceStatus;
 		spongeBobChickenCapsStatus = debuilder.spongeBobChickenCapsStatus;
@@ -76,8 +76,8 @@ public class SettingBuilder {
 		return this;
 	}
 
-	public SettingBuilder setAuthorEmbedStatus(boolean authorEmbedStatus) {
-		this.authorEmbedStatus = authorEmbedStatus;
+	public SettingBuilder setTranslatorStatus(boolean translatorStatus) {
+		this.translatorStatus = translatorStatus;
 		return this;
 	}
 	

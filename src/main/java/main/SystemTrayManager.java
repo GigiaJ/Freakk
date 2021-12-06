@@ -3,7 +3,7 @@ package main;
 import bot.settings.SettingSaver;
 import commands.color.AutoColor;
 import commands.color.colorchat.ColorChat;
-import commands.general.AuthorEmbeding;
+import commands.general.Translator;
 import commands.general.CloseBot;
 import commands.general.MessageEmbeding;
 import commands.general.NoSpace;
@@ -35,7 +35,7 @@ public class SystemTrayManager implements ItemListener, ActionListener {
     static Menu embeddedEffects = new Menu("Embedded Effects");
     static CheckboxMenuItem cb1 = new CheckboxMenuItem("Color Chat");
     static CheckboxMenuItem cb2 = new CheckboxMenuItem("Embedded Messages");
-    static CheckboxMenuItem cb3 = new CheckboxMenuItem("Author Emb Messages");
+    static CheckboxMenuItem cb3 = new CheckboxMenuItem("Translator");
     static CheckboxMenuItem cb4 = new CheckboxMenuItem("Auto Color");
     static CheckboxMenuItem cb5 = new CheckboxMenuItem("Reverser");
     static CheckboxMenuItem cb6 = new CheckboxMenuItem("No Space");
@@ -227,7 +227,7 @@ public class SystemTrayManager implements ItemListener, ActionListener {
             cb2.setState(false);
         }
 
-        if (Main.settings.getAuthorEmbedStatus()) {
+        if (Main.settings.getTranslatorStatus()) {
             cb2.setState(false);
             cb3.setState(true);
         } else {
@@ -270,7 +270,7 @@ public class SystemTrayManager implements ItemListener, ActionListener {
         }
 
         if (settingToChange == 3) {
-            AuthorEmbeding.authorEmbedMessage();
+            Translator.translateMessages();
         }
 
         if (settingToChange == 4) {

@@ -13,10 +13,7 @@ import macro.Macro;
 import macro.Macros;
 import main.JNA;
 import main.Main;
-import messages.messageEffects.ColorChatEffect;
-import messages.messageEffects.NoSpaceEffect;
-import messages.messageEffects.ReverserEffect;
-import messages.messageEffects.SpongeBobChickenCapsEffect;
+import messages.messageEffects.*;
 import messages.Message;
 
 public class MessageEffects {
@@ -45,6 +42,7 @@ public class MessageEffects {
             messageToSend = ReverserEffect.reverseMessageEffect(messageToSend);
             messageToSend = NoSpaceEffect.noSpaceEffect(messageToSend);
             messageToSend = SpongeBobChickenCapsEffect.spongeBobChickenCapsEffect(messageToSend);
+            messageToSend = ActiveTranslateEffect.translater(messageToSend);
             ColorChatEffect.colorChatEffect(messageToSend, MessageInfo.message);
         } else {
             new Message(messageToSend.toString()).send();

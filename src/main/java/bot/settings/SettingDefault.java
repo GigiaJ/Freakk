@@ -13,7 +13,7 @@ public class SettingDefault {
 		builder.setAutoColorStatus(false);
 		builder.setColorChatStatus(false);
 		builder.setEmbedMessageStatus(false);
-		builder.setAuthorEmbedStatus(false);	
+		builder.setTranslatorStatus(false);
 		builder.setReverserStatus(false);
 		builder.setNoSpaceStatus(false);
 		builder.setSpongeBobChickenCapStatus(false);

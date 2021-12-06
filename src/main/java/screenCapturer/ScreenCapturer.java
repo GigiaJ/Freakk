@@ -7,16 +7,7 @@
 
 package screenCapturer;
 
-import java.awt.AWTException;
-import java.awt.AlphaComposite;
-import java.awt.BasicStroke;
-import java.awt.Color;
-import java.awt.Dimension;
-import java.awt.Graphics;
-import java.awt.Graphics2D;
-import java.awt.Rectangle;
-import java.awt.Robot;
-import java.awt.Toolkit;
+import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
@@ -39,6 +30,7 @@ import javax.swing.SwingUtilities;
 import lc.kra.system.keyboard.GlobalKeyboardHook;
 import lc.kra.system.keyboard.event.GlobalKeyAdapter;
 import lc.kra.system.keyboard.event.GlobalKeyEvent;
+import main.ClipboardHandler;
 import main.Main;
 import org.bytedeco.javacpp.BytePointer;
 import org.bytedeco.tesseract.*;
@@ -49,84 +41,45 @@ public class ScreenCapturer extends JFrame {
     private static final long serialVersionUID = 1L;
     private ExamplePanel selectionPane;
     public static GlobalKeyboardHook keyboardHook;
-    private static Color BACKGROUND = new Color(0, 0, 128, 50);
+    private static final Color BACKGROUND = new Color(0, 0, 128, 50);
+    private static Robot robot;
 
     public ScreenCapturer() {
+        try {
+            robot = new Robot();
+        } catch (AWTException e) {
+            e.printStackTrace();
+        }
         this.setDefaultCloseOperation(2);
         keyboardHook = new GlobalKeyboardHook(true);
         keyboardHook.addKeyListener(new GlobalKeyAdapter() {
-            BufferedImage img = null;
-            String text = "";
 
             public void keyPressed(GlobalKeyEvent event) {
             }
 
             public void keyReleased(GlobalKeyEvent e) {
                 if (e.getVirtualKeyCode() == 27) {
-                    ScreenCapturer.this.close();
+                    close();
                 }
 
                 if (e.getVirtualKeyCode() == 192) {
-                    ScreenCapturer.this.toggleVisible();
+                    toggleVisible();
                 }
 
-                if (ScreenCapturer.this.isFrameVisible() && ScreenCapturer.this.isFocused()) {
-                	
-                    ImageInformation imageInfo;
-                    Robot robot;
-                    CopyToClipBoard ctx;
-                    if (e.getVirtualKeyCode() == 67) {
-                        imageInfo = new ImageInformation(ExamplePanel.sx, ExamplePanel.sy, ExamplePanel.ex, ExamplePanel.ey);
-                        if (imageInfo.getHeight() > 0 && imageInfo.getWidth() > 0) {
-                            try {
-                                robot = new Robot();
-                                this.img = robot.createScreenCapture(new Rectangle(imageInfo.getTopRightX(), imageInfo.getTopRightY(), imageInfo.getHeight(), imageInfo.getWidth()));
-                                this.text = ScreenCapturer.this.retrieveText(ScreenCapturer.saveImageToTemporaryFile(this.img));
-                                ctx = new CopyToClipBoard();
-                                ctx.copyImage(this.img);
-                            } catch (IOException | AWTException var8) {
-                                var8.printStackTrace();
-                            }
-                        }
-                    }
-
-                    if (e.getVirtualKeyCode() == 84) {
-                        imageInfo = new ImageInformation(ExamplePanel.sx, ExamplePanel.sy, ExamplePanel.ex, ExamplePanel.ey);
-                        if (imageInfo.getHeight() > 0 && imageInfo.getWidth() > 0) {
-                            try {
-                                robot = new Robot();
-                                this.img = robot.createScreenCapture(new Rectangle(imageInfo.getTopRightX(), imageInfo.getTopRightY(), imageInfo.getHeight(), imageInfo.getWidth()));
-                                this.text = ScreenCapturer.this.retrieveText(ScreenCapturer.saveImageToTemporaryFile(this.img));
-                                ctx = new CopyToClipBoard();
-                                ctx.setText(this.text);
-                            } catch (IOException | AWTException var7) {
-                                var7.printStackTrace();
-                            }
-                        }
-                    }
-
-                    CopyToClipBoard ct;
-                    if (e.getVirtualKeyCode() == 80) {
-                        try {
-                            if (this.img != null) {
-                                ct = new CopyToClipBoard();
-                                ct.copyImage(this.img);
-                            }
-
-                            Runtime.getRuntime().exec("mspaint.exe");
-                        } catch (IOException var6) {
-                            var6.printStackTrace();
-                        }
-                    }
-
-                    if (e.getVirtualKeyCode() == 78) {
-                        try {
-                            Runtime.getRuntime().exec("notepad.exe");
-                            ct = new CopyToClipBoard();
-                            ct.setText(this.text);
-                        } catch (IOException var5) {
-                            var5.printStackTrace();
-                        }
+                if (isFrameVisible() && isFocused()) {
+                    switch(e.getVirtualKeyCode()) {
+                        case(67):
+                            set(true);
+                            break;
+                        case(78):
+                            openApp("notepad.exe", false);
+                            break;
+                        case(80):
+                            openApp("mspaint.exe", true);
+                            break;
+                        case(84):
+                            set(false);
+                            break;
                     }
                 }
 
@@ -140,6 +93,44 @@ public class ScreenCapturer extends JFrame {
         this.populate();
         this.setType(Type.UTILITY);
         this.setVisible(true);
+    }
+
+    /**
+     * Opens an app executable and then assigns the associated highlighted text to the clipboard through the set
+     * method
+     * @param executable        the application to open
+     * @param image             is the clipboard data to be set an image or text
+     */
+    private void openApp(String executable, boolean image) {
+        try {
+            Runtime.getRuntime().exec(executable);
+            set(image);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * Sets the clipboard data with the highlighted data based on whether the user wishes to extract the text
+     * or simply copy the image selection
+     * @param image             is the clipboard data to be set an image or text
+     */
+    private void set(boolean image) {
+        try {
+            BufferedImage img;
+            String text = "";
+            ImageInformation imageInfo = new ImageInformation(ExamplePanel.sx, ExamplePanel.sy, ExamplePanel.ex, ExamplePanel.ey);
+            img = robot.createScreenCapture(new Rectangle(imageInfo.getTopRightX(), imageInfo.getTopRightY(), imageInfo.getHeight(), imageInfo.getWidth()));
+            if (!image) {
+                text = retrieveText(ScreenCapturer.saveImageToTemporaryFile(img));
+                ClipboardHandler.getInstance().setText(text);
+            } else {
+                ClipboardHandler.getInstance().copyImage(img);
+            }
+        }
+        catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     private void close() {
@@ -172,6 +163,7 @@ public class ScreenCapturer extends JFrame {
     }
 
     public static File saveImageToTemporaryFile(BufferedImage imageToSave) throws IOException {
+        imageToSave = convertToGrayscale(imageToSave);
         File temporaryFile = File.createTempFile("ScreenCopy", ".png");
         temporaryFile.delete();
         String formatName = "png";
@@ -202,7 +194,7 @@ public class ScreenCapturer extends JFrame {
     public String retrieveText(File temporaryFile) throws IOException {
         String text = "";
         TessBaseAPI api = new TessBaseAPI();
-        String path = "C:\\Users\\Jaggar\\Downloads\\";//Main.baseFolder.getAbsolutePath() + "\\";
+        String path = "C:\\Users\\Gigia\\Downloads\\";//Main.baseFolder.getAbsolutePath() + "\\";
         api.Init(path, "eng");
         PIX image = lept.pixRead(temporaryFile.getAbsolutePath());
         api.SetImage(image);
@@ -219,8 +211,8 @@ public class ScreenCapturer extends JFrame {
 
     private static void setDPI(IIOMetadata metadata) throws IIOInvalidTreeException {
         double INCH_TO_CM = 2.54D;
-        double DPI = 600.0D;
-        double dotsPerMilli = 45.811023622047244D;
+        double DPI = 400D;
+        double dotsPerMilli = DPI / 10 / INCH_TO_CM;
         IIOMetadataNode horiz = new IIOMetadataNode("HorizontalPixelSize");
         horiz.setAttribute("value", Double.toString(dotsPerMilli));
         IIOMetadataNode vert = new IIOMetadataNode("VerticalPixelSize");
@@ -232,6 +224,28 @@ public class ScreenCapturer extends JFrame {
         root.appendChild(dim);
         metadata.mergeTree("javax_imageio_1.0", root);
     }
+
+    private static BufferedImage convertToGrayscale(BufferedImage image) {
+        int width = image.getWidth();
+        int height = image.getHeight();
+        for (int i = 0; i < height; i++) {
+
+            for (int j = 0; j < width; j++) {
+
+                Color c = new Color(image.getRGB(j, i));
+                int red = (int) (c.getRed() * 0.299);
+                int green = (int) (c.getGreen() * 0.587);
+                int blue = (int) (c.getBlue() * 0.114);
+                Color newColor = new Color(red + green + blue,
+
+                        red + green + blue, red + green + blue);
+
+                image.setRGB(j, i, newColor.getRGB());
+            }
+        }
+        return image;
+    }
+
 
     public static class ExamplePanel extends JPanel {
         private static final long serialVersionUID = 1L;

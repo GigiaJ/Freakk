@@ -43,7 +43,7 @@ public class GlobalListeners {
 	private static String colorScheme = "";
 
 	public static void keyboardListener() throws AWTException, InterruptedException {
-		GlobalKeyboardHook keyboardHook = new GlobalKeyboardHook(true); // use false here to switch to hook instead of
+		GlobalKeyboardHook keyboardHook = new GlobalKeyboardHook(false); // use false here to switch to hook instead of
 																		// raw input
 		keyboardHook.addKeyListener(new GlobalKeyAdapter() {
 			@Override
